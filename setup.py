@@ -5,22 +5,20 @@ def getfile(filename):
     with open(filename) as file:
         return file.read()
 
-
 setup(
     name='makepass',
     version='0.9.1',
-    packages=[''],
-    package_dir={'': 'src'},
-    data_files=[
-        ('share/makepass/', [
-            'data/10k.txt',
-            'data/20k.txt',
-        ]),
+    packages=[
+        'makepass'
     ],
+    package_dir={'': 'src'},
     entry_points={
         'console_scripts': [
-            'make_pass = makepass:main',
+            'make_pass = makepass.makepass:main',
         ],
+    },
+    package_data={
+        'makepass': ["data/10k.txt", "data/20k.txt"]
     },
     install_requires=[
         'autocommand >=2.1.0, <3.0.0',

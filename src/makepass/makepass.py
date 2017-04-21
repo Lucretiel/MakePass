@@ -1,20 +1,22 @@
 import random
 import itertools
 import sys
+from contextlib import closing
+from pkg_resources import resource_stream
 from math import log2
-from os.path import join as path_join
 
 from autocommand import autocommand
 
 
 def base_word_set(use_10k):
-    path = path_join(
-        sys.prefix, 'share', 'makepass',
-        '10k.txt' if use_10k else '20k.txt'
+    # These files should have been installed by setup.py
+    file = resource_stream(
+        'makepass',
+        'data/10k.txt' if use_10k else 'data/20k.txt'
     )
-    with open(path) as file:
+    with closing(file):
         for word in file:
-            yield word.strip().capitalize()
+            yield word.decode('utf8').strip().capitalize()
 
 
 def sized_word_set(word_set, min_word, max_word):
