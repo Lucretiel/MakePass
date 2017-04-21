@@ -1,4 +1,15 @@
 from setuptools import setup
+import sys
+
+dependencies = [
+    'autocommand >=2.1.0, <3.0.0',
+]
+
+# TODO: I'm concerned that this won't work as well as I hope. In particular,
+# I'm worried that, if a wheel or source distribution is produced, the
+# dependencies are encoded directly, rather than using the setup.py logic.
+if sys.version_info < (3, 4):
+    dependencies.append('pathlib2')
 
 setup(
     name='makepass',
@@ -16,9 +27,7 @@ setup(
             'make_pass = makepass:main',
         ],
     },
-    install_requires=[
-        'autocommand >=2.1.0, <3.0.0',
-    ],
+    install_requires=dependencies,
     platforms='any',
     license='GPLv2',
     author='Nathan West',
