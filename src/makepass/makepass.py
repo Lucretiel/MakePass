@@ -99,7 +99,9 @@ def main(
     verbose: 'Print verbose entropy calculation details' =False,
 ):
     '''
-    %(prog)s is a password generator
+    %(prog)s is a password generator inspired by https://xkcd.com/936/. It
+    generates simple, memorable, secure passwords by combining common english
+    words.
     '''
     if min_word > max_word:
         return "min_word must be less than or equal to max_word"
