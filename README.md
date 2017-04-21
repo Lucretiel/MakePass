@@ -31,3 +31,5 @@ All of the following parameters can be changed:
 - **S** = 10,000
 - Random numeral **is** appended
 - Word set: 20k. Can be repaced with the 10k set.
+
+These default parameters produce passwords with an entropy of approximately 57.561 bits.
