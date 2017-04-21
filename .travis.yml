@@ -1,18 +1,18 @@
 language: python
 python:
-  - '3.3'
-  - '3.4'
-  - '3.5'
-  - '3.6'
+- '3.3'
+- '3.4'
+- '3.5'
+- '3.6'
 install:
-  - pip install .
+- pip install .
 script:
-  - sh util/test.sh
+- sh util/test.sh
 deploy:
   provider: pypi
   user: Lucretiel
   password:
-    secure: kLTVnrjyggnqaGnLAi5M02LDGIC/hfQmdFD+2onZVjRyj3EKYvZ/INz9NtIPgMo4ocixe59LPJI40nORm53ifPiKZs0HikRw7Z/ebzqDXsyShlP4alxd35jXglDV+dRF8yT86UxlLYaUWp5JYODcGKZuMpBGqxu6KD2apq1EILc=
+    secure: YmRZrcnYqboA0Vx3Bu++xBt2NN8lJWcdKRxRYeEbGyF23J3Obqx1WyPzrB4ubHbJlOffzAduh9DPee7YbJA4mZ2E65mWw5Fyf9Cv8AKoBZI2pMC17k+oh4MMzYIswmNwR4W2EUS/4gb/M9mP6WEQQONSTNNlFyLSlpbjzOW1PzPMlq7YbzSNJVpCjBmwV77hZZ+yXAGqbApd+sfyVXwHCX1gaqTmi/KFdSkeNcH3YYce89CT5GOwr5x8Sh2uQRI2ttS/9HBdo9PYEktLsOu43ueU+CS2XgxeUzlAr9hpUbLaOn6UWFbGzzHs28OkIbSxNH86okCeZOxYkKGYbm2Np+VcSBos+bwAn0L/su4Git+eKjb/20/uJJYHkKZt9qsiKE+Hlmt0BdkaFDkiLmZL4NMHzbqeVZdDgS68vyV+zM0xJkjg5MuXNw9LR1T4bc+sOCaKAmVKHlxfHR5SSaRA4xA9N81iQ3ul4eV87/ZP3bWt99nern6ZcMpqvbvftByml6Mb+Z3Au8zuGeYE7CDcRJ/1xqh48EYw5/ZrsYhOoilYsIbYR7qBbpLS44V/9w0B2RbWWZEzxcRUKKlni/JEThwV7p4pySEmqWpcmYRBdeM6hXOQ3JMpmzEZcTuOXjwQ4UouEFRx3Sz7iKNSrherIH5ksRLZhmZ/caVF8EYwcuY=
   on:
     tags: true
     python: '3.6'

@@ -8,7 +8,7 @@ def getfile(filename):
 
 setup(
     name='makepass',
-    version='0.9.0',
+    version='0.9.1',
     packages=[''],
     package_dir={'': 'src'},
     data_files=[
