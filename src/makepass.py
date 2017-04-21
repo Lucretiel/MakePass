@@ -56,6 +56,18 @@ def count_iterator(it):
         return sum(1 for _ in it)
 
 
+def wordset_entropy(word_set_size, word_count):
+    return sum(map(log2, range(word_set_size, word_set_size - word_count, -1)))
+
+
+def numeral_entropy(append_numeral):
+    return log2(10) if append_numeral else 0
+
+
+def sampled_entropy(sample_size, success_size):
+    return log2(success_size) - log2(sample_size)
+
+
 def estimate_entropy(
     word_set_size,
     word_count,
@@ -64,9 +76,9 @@ def estimate_entropy(
     success_size
 ):
     return (
-        sum(map(log2, range(word_set_size, word_set_size - word_count, -1))) +
-        log2(10 if append_numeral else 1) +
-        log2(success_size) - log2(sample_size)
+        wordset_entropy(word_set_size, word_count) +
+        numeral_entropy(append_numeral) +
+        sampled_entropy(sample_size, success_size)
     )
 
 
@@ -124,7 +136,7 @@ def main(
         )
 
         print(
-            "Estimated password entropy: {:.4f} bits".format(entropy),
+            "Estimated password entropy: {:.2f} bits".format(entropy),
             file=sys.stderr
         )
 
@@ -132,19 +144,23 @@ def main(
             print(
                 "Generated a password of {word_count} non-repeating words, "
                 "from a set of {word_set_size} common english words of length "
-                "{min_word} to {max_word}.".format(
+                "{min_word} to {max_word}. {bits:.4f} bits of entropy".format(
                     word_count=word_count,
-                    word_set_size=len(word_set),
+                    word_set_size=word_set_size,
                     min_word=min_word,
                     max_word=max_word,
+                    bits=wordset_entropy(word_set_size, word_count),
                 ),
-                file=sys.stderr
+                file=sys.stderr,
             )
 
             if not no_append_numeral:
                 print(
-                    "A random numeral in the range 0-9 was appended",
-                    file=sys.stderr
+                    "A random numeral in the range 0-9 was appended, for an "
+                    "additional {bits:.4f} bits of entropy".format(
+                        bits=numeral_entropy(True),
+                    ),
+                    file=sys.stderr,
                 )
 
             if success_size != sample_size:
@@ -152,11 +168,13 @@ def main(
                     "{sample_size} sample passwords were generated, but only "
                     "{success_size} passwords had a length of at least "
                     "{min_length}. The entropy estimate was adjusted "
-                    "accordingly.".format(
+                    "accordingly by {bits:.4f} bits.".format(
                         sample_size=sample_size,
                         success_size=success_size,
-                        min_length=min_length
-                    )
+                        min_length=min_length,
+                        bits=sampled_entropy(sample_size, success_size),
+                    ),
+                    file=sys.stderr
                 )
 
     print(password)
