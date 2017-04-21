@@ -2,16 +2,17 @@ import random
 import itertools
 from math import log2
 import sys
-import pathlib
+from os.path import join as path_join
 
 from autocommand import autocommand
 
 
 def base_word_set(use_10k):
-    path = pathlib.Path(sys.prefix) / 'share' / 'makepass' / (
+    path = path_join(
+        sys.prefix, 'share', 'makepass',
         '10k.txt' if use_10k else '20k.txt'
     )
-    with path.open() as file:
+    with open(path) as file:
         for word in file:
             yield word.strip().capitalize()
 
