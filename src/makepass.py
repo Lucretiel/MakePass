@@ -1,6 +1,14 @@
 import random
 import itertools
-from math import log2
+
+try:
+    from math import log2
+except ImportError:
+    from math import log
+
+    def log2(x):
+        return log(x, 2)
+
 import sys
 from os.path import join as path_join
 
