@@ -1,15 +1,10 @@
 from setuptools import setup
-import sys
 
-dependencies = [
-    'autocommand >=2.1.0, <3.0.0',
-]
 
-# TODO: I'm concerned that this won't work as well as I hope. In particular,
-# I'm worried that, if a wheel or source distribution is produced, the
-# dependencies are encoded directly, rather than using the setup.py logic.
-if sys.version_info < (3, 4):
-    dependencies.append('pathlib2')
+def getfile(filename):
+    with open(filename) as file:
+        return file.read()
+
 
 setup(
     name='makepass',
@@ -27,19 +22,21 @@ setup(
             'make_pass = makepass:main',
         ],
     },
-    install_requires=dependencies,
+    install_requires=[
+        'autocommand >=2.1.0, <3.0.0',
+    ],
     platforms='any',
     license='GPLv2',
     author='Nathan West',
     url='https://github.com/Lucretiel/MakePass',
     description='A simple password generator based on https://xkcd.com/936/',
+    long_description=getfile('README.rst'),
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
