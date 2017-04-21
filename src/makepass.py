@@ -1,6 +1,7 @@
 import random
 import itertools
 import sys
+from math import log2
 from os.path import join as path_join
 
 from autocommand import autocommand
