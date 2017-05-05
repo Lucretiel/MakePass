@@ -186,7 +186,9 @@ def main(
     '''
     %(prog)s is a password generator inspired by https://xkcd.com/936/. It
     generates simple, memorable, secure passwords by combining common english
-    words.
+    words. All parameters are optional; under the default settings it generates
+    a password with an entropy of roughly 57.5 bits and an average length of
+    27 characters.
     '''
     if min_word > max_word:
         return "min_word must be less than or equal to max_word"
