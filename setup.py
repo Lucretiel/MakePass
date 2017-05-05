@@ -7,7 +7,7 @@ def getfile(filename):
 
 setup(
     name='makepass',
-    version='0.9.5',
+    version='0.9.6',
     packages=[
         'makepass'
     ],
@@ -30,7 +30,7 @@ setup(
     description='A simple password generator based on https://xkcd.com/936/',
     long_description=getfile('README.rst'),
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
         'Programming Language :: Python',
