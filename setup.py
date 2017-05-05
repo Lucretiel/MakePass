@@ -18,7 +18,7 @@ setup(
         ],
     },
     package_data={
-        'makepass': ["data/10k.txt", "data/20k.txt"]
+        'makepass': ["data/10k.*", "data/20k.*"]
     },
     install_requires=[
         'autocommand >=2.1.0, <3.0.0',
