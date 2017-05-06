@@ -41,6 +41,6 @@ Security Disclaimer
 
 While I am confident in its basic soundness, ``makepass`` has not undergone any kind of security review or audit, and I am not an expert in the field of password security. Use at your own risk.
 
-``makepass`` is built around use of `` `random.SystemRandom <https://docs.python.org/3/library/random.html#random.SystemRandom>`_``, which in turn is based on `` `os.urandom <https://docs.python.org/3/library/os.html#os.urandom>`_``. ``os.urandom`` is described by the Python documentation as "suitable for cryptographic use." For more information about the use of ``os.urandom`` and ``/dev/urandom`` in secure contexts, see `this article <https://www.2uo.de/myths-about-urandom/>`_.
+``makepass`` is built around use of `random.SystemRandom <https://docs.python.org/3/library/random.html#random.SystemRandom>`_, which in turn is based on `os.urandom <https://docs.python.org/3/library/os.html#os.urandom>`_. ``os.urandom`` is described by the Python documentation as "suitable for cryptographic use." For more information about the use of ``os.urandom`` and ``/dev/urandom`` in secure contexts, see `this article <https://www.2uo.de/myths-about-urandom/>`_.
 
 The most obvious security hole I'm currently aware of in ``makepass`` is that it writes to your terminal, which may be logged or cached to disk. Make sure to pipe it into a secure destintion when creating a password you actually intend to use; I'm personally partial to the ``say`` command on OSX, which speaks the password out loud through your speakers.
