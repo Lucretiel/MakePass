@@ -37,26 +37,25 @@ def constrain_word_length(words, min_len, max_len):
 
 def gen_alpha_password(rand_engine, word_set, word_count):
     '''
-    Create a single password out words from the words set
+    Create a single password out words from the words set. Return an iterable
+    of strings
     '''
-    return ''.join(rand_engine.sample(word_set, word_count))
+    yield from rand_engine.sample(word_set, word_count)
 
 
 def gen_alnum_password(rand_engine, word_set, word_count):
     '''
     Create a password out of words from the word set, and append a random
-    numeral
+    numeral. Return an iterable of strings
     '''
-    return (
-        gen_alpha_password(rand_engine, word_set, word_count) +
-        str(rand_engine.randrange(10))
-    )
+    yield from gen_alpha_password(rand_engine, word_set, word_count)
+    yield str(rand_engine.randrange(10))
 
 
 def base_passwords(rand_engine, word_set, word_count, append_numeral):
     '''
     Generate an infinite list of password using either gen_alnum_password or
-    gen_alpha_password
+    gen_alpha_password.
     '''
     if append_numeral:
         gen = gen_alnum_password
@@ -222,6 +221,7 @@ def main(
         append_numeral=not no_append_numeral
     )
 
+    passwords = map(''.join, passwords)
     passwords = itertools.islice(passwords, sample_size)
     passwords = constrain_word_length(passwords, min_length, max_length)
 
