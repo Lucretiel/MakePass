@@ -5,9 +5,10 @@ def getfile(filename):
     with open(filename) as file:
         return file.read()
 
+
 setup(
     name='makepass',
-    version='0.9.7',
+    version='0.9.8',
     packages=[
         'makepass'
     ],
