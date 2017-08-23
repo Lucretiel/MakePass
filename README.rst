@@ -32,7 +32,9 @@ All of the following parameters can be changed:
 - **M** = ∞
 - **S** = 10,000
 - Random numeral **is** appended
+- Random specical character is **not** appended
 - Word set: 20k. Can be repaced with the 10k set.
+- Special character set: ``-_()/.,?!;:``. Should be accepted by most password filters.
 
 These default parameters produce passwords with an entropy of approximately 57.561 bits.
 
