@@ -8,7 +8,7 @@ quit() {
 	exit "$1"
 }
 
-for i in {1..20}
+for i in $(seq 20)
 do
 	printf '.'
 	if ! make_pass -v --min_length=24 >> "$OUTPUT_FILE" 2> "$LOG_FILE"
