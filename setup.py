@@ -8,7 +8,7 @@ def getfile(filename):
 
 setup(
     name='makepass',
-    version='0.10.2',
+    version='0.11.0',
     packages=[
         'makepass'
     ],
@@ -19,7 +19,7 @@ setup(
         ],
     },
     package_data={
-        'makepass': ["data/10k.txt", "data/20k.txt"]
+        'makepass': ["data/words.txt"]
     },
     install_requires=[
         'autocommand >=2.1.0, <3.0.0',

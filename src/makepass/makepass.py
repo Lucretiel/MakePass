@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import itertools
-import random
 import re
+import secrets
 import sys
 import textwrap
 
@@ -13,18 +13,16 @@ from pkg_resources import resource_stream
 from autocommand import autocommand
 
 
-def base_word_set(target_resource):
+def base_word_set(top_words):
 	'''
 	Get the initial set of words to create a password from
 	'''
 	# These files should have been installed by setup.py
-	file = resource_stream(
-		'makepass',
-		target_resource,
-	)
-	with closing(file):
-		for word in file:
-			yield word.decode('utf8').strip()
+	with closing(resource_stream('makepass', 'data/words.txt')) as file:
+		yield from itertools.islice(
+			(word.decode('utf8').strip() for word in file),
+			top_words
+		)
 
 
 def constrain_word_length(words, min_len, max_len):
@@ -37,47 +35,47 @@ def constrain_word_length(words, min_len, max_len):
 			yield word
 
 
-def gen_alpha_passwords(rand_engine, word_set, word_count):
+def random_stream(things):
+	'''
+	Generate an infinite sequence of random things from a list of things
+	'''
+	return map(secrets.choice, itertools.repeat(things))
+
+
+def non_repeating(iterable):
+	'''
+	Given an iterable, yield only the unique elements
+	'''
+	seen = set()
+	add = seen.add
+	for thing in iterable:
+		if thing not in seen:
+			add(thing)
+			yield thing
+
+
+def gen_alpha_passwords(word_set, word_count):
 	'''
 	Generate an infinite sequence of alpha passwords, where each password is
-	`word_count` concatenated words
+	`word_count` concatenated words. Words are produced without replacement
 	'''
 	join = ''.join
-	sample = rand_engine.sample
+	islice = itertools.islice
+	words = random_stream(word_set)
 
 	while True:
-		yield join(sample(word_set, word_count))
+		yield join(islice(non_repeating(words), word_count))
 
 
-def gen_nums(rand_engine):
+def base_passwords(word_set, word_count, append_numeral, special_chars):
 	'''
-	Generate an infinite sequence of random digits. each digit is a string
+	Generate an infinite list of passwords
 	'''
-	local_str = str
-	randrange = rand_engine.randrange
-	while True:
-		yield local_str(randrange(10))
-
-
-def gen_chars(rand_engine, special_chars):
-	'''
-	Generate an infinite sequence of random characters from the character set
-	'''
-	choice = rand_engine.choice
-	while True:
-		yield choice(special_chars)
-
-
-def base_passwords(rand_engine, word_set, word_count, append_numeral, special_chars):
-	'''
-	Generate an infinite list of password using either gen_alnum_password or
-	gen_alpha_password.
-	'''
-	gens = [gen_alpha_passwords(rand_engine, word_set, word_count)]
+	gens = [gen_alpha_passwords(word_set, word_count)]
 	if append_numeral:
-		gens.append(gen_nums(rand_engine))
+		gens.append(random_stream('0123456789'))
 	if special_chars:
-		gens.append(gen_chars(rand_engine, special_chars))
+		gens.append(random_stream(special_chars))
 
 	return map(''.join, zip(*gens))
 
@@ -90,7 +88,7 @@ def password_parts(password):
 	match = re.match(r'^((?:[A-Z][a-z]*)+)([0-9]?)([^a-zA-Z0-9]?)$', password)
 	if match:
 		word_parts = re.findall(r'[A-Z][a-z]*', match.group(1))
-		number_part = int(match.group(2))
+		number_part = match.group(2)
 		char_part = match.group(3)
 		return word_parts, number_part, char_part
 	else:
@@ -99,7 +97,8 @@ def password_parts(password):
 
 def count_iterator(it):
 	'''
-	Count the length of an iterable. This consumes the iterator.
+	Count the length of an iterable. This consumes the iterator, if it doesn't
+	have a len()
 	'''
 	try:
 		return len(it)
@@ -110,11 +109,11 @@ def count_iterator(it):
 def wordset_entropy(word_set_size, word_count):
 	'''
 	Get the entropy for selecting word_count words from a set of word_set_size,
-	without replacement
+	with replacement
 	'''
-	# For instance: 5000, 4999, 4998, 4997
-	word_set_sizes = range(word_set_size, word_set_size - word_count, -1)
-	return sum(log2(size) for size in word_set_sizes)
+	# We generate words without replacement, so for a word set size of N, the
+	# entropy is log(N) + log(N - 1) + log(N - 2)...
+	return sum(log2(word_set_size - n) for n in range(word_count))
 
 
 def numeral_entropy(append_numeral):
@@ -145,10 +144,10 @@ def sampled_entropy(sample_size, success_size):
 
 	original_entropy = log2(permutation_space)
 	new_entropy = log2(permutation_space * ratio)
-	   = log2(permutation_space) + log2(ratio)
-	   = log2(permutation_space) + log2(success_size / sample_size)
-	   = log2(permutation_space) + log2(success_size) - log2(sample_size)
-	   = original_entropy + log2(success_size) - log2(sample_size)
+		= log2(permutation_space) + log2(ratio)
+		= log2(permutation_space) + log2(success_size / sample_size)
+		= log2(permutation_space) + log2(success_size) - log2(sample_size)
+		= original_entropy + log2(success_size) - log2(sample_size)
 	'''
 	return log2(success_size) - log2(sample_size)
 
@@ -176,7 +175,7 @@ def estimate_entropy(
 def errfmt(fmt, *args, **kwargs):
 	'''
 	Given a format string, .format() it with the args and kwargs, text wrap it
-	to 70 columns, and write it to stdout.
+	to 70 columns, and write it to stderr.
 	'''
 	return print(textwrap.fill(
 		fmt.format(*args, **kwargs)
@@ -205,7 +204,9 @@ def lengthfmt(min_length, max_length):
 @autocommand(__name__)
 def main(
 	word_count: 'Number of words in the password (defaults to %(default)s)' =4,
-	min_length: ('Minimum character length in the password (defaults to 24, or MAX_LENGTH)', int) =None,
+	min_length: (
+		'Minimum character length in the password (defaults to 24, or '
+		'MAX_LENGTH)', int) =None,
 	max_length: ('Maximum character length in the password (defaults to unlimited)', int) =None,
 	append_char: "Append a random special character to the password" =False,
 	special_set:
@@ -217,10 +218,12 @@ def main(
 	entropy_estimate: "Print an entropy estimate to stderr" =False,
 	verbose: 'Print verbose entropy calculation details to stderr' =False,
 	count: 'Print the character length of the password to stderr' =False,
-	use_10k: 'Use the 10k most common words, instead of 20k' =False,
 	sample_size:
 		"Number of internal passwords to produce. Used for entropy estimates, "
 		"and as the number of attempts before giving up" =10000,
+	top_words: "Use the top TOP_WORDS most common words from the word list. "
+		"Defaults to 20,000. Using a smaller word list will make your "
+		"password less secure, but possibly easier to remember" =20000
 ):
 	'''
 	%(prog)s is a password generator inspired by https://xkcd.com/936/. It
@@ -246,8 +249,16 @@ def main(
 	min_length = max(1, min_length)
 	min_word = max(1, min_word)
 
-	min_possible_size = (min_word * word_count) + (0 if no_append_numeral else 1) + (1 if append_char else 0)
-	max_possible_size = (max_word * word_count) + (0 if no_append_numeral else 1) + (1 if append_char else 0)
+	min_possible_size = (
+		(min_word * word_count) +
+		(0 if no_append_numeral else 1) +
+		(1 if append_char else 0)
+	)
+	max_possible_size = (
+		(max_word * word_count) +
+		(0 if no_append_numeral else 1) +
+		(1 if append_char else 0)
+	)
 
 	if min_possible_size > max_length:
 		return (
@@ -266,12 +277,9 @@ def main(
 			)
 		)
 
-	rand_engine = random.SystemRandom()
-
-	word_set = tuple(constrain_word_length(
-		base_word_set('data/10k.txt' if use_10k else 'data/20k.txt'),
-		min_word, max_word,
-	))
+	word_set = tuple(
+		constrain_word_length(base_word_set(top_words), min_word, max_word)
+	)
 
 	word_set_size = len(word_set)
 
@@ -286,14 +294,14 @@ def main(
 
 	if log2(word_set_size) > min_word * log2(26):
 		errfmt(
-			"Warning: the entropy of brute forcing a short word is less than "
+			"Warning: the entropy of brute forcing a short word (that is, "
+			"brute forcing it as a random string of ascii) is less than "
 			"that of selecting one from the random set; the password may be "
 			"less secure than the entropy estimate indicates, especially if "
 			"using a small max_word")
 
 	# Produce an infinite set of passwords, using the constraints
 	passwords = base_passwords(
-		rand_engine=rand_engine,
 		word_set=word_set,
 		word_count=word_count,
 		append_numeral=not no_append_numeral,
@@ -325,8 +333,8 @@ def main(
 
 		if verbose:
 			errfmt(
-				"Generated a password of {word_count} non-repeating words, "
-				"from a set of {word_set_size} common english words of "
+				"Generated a password of {word_count} non-repeating "
+				"words, from a set of {word_set_size} common english words of "
 				"{lenfmt} letters: {bits:.4f} bits of entropy.",
 
 				word_count=word_count,
