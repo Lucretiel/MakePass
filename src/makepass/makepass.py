@@ -2,9 +2,15 @@
 
 import itertools
 import re
-import secrets
 import sys
 import textwrap
+
+try:
+	from secrets import choice as random_choice
+except ImportError:
+	from random import SystemRandom
+	random_choice = SystemRandom().choice
+	del SystemRandom
 
 from contextlib import closing
 from math import log2
@@ -37,9 +43,9 @@ def constrain_word_length(words, min_len, max_len):
 
 def random_stream(things):
 	'''
-	Generate an infinite sequence of random things from a list of things
+	Generate an infinite sequence of random things from a list of things.
 	'''
-	return map(secrets.choice, itertools.repeat(things))
+	return map(random_choice, itertools.repeat(things))
 
 
 def non_repeating(iterable):
