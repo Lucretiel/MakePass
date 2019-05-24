@@ -36,7 +36,7 @@ All of the following parameters can be changed:
 - Word set: 20k. Can be repaced with the 10k set.
 - Special character set: ``-_()/.,?!;:``. Should be accepted by most password filters.
 
-These default parameters produce passwords with an entropy of approximately 57.561 bits.
+These default parameters produce passwords with an entropy of approximately 57.561 bits. Use the `-v` or `-e` flags to see a calculated entropy estimate given your parameters. 
 
 Security Disclaimer
 -------------------
