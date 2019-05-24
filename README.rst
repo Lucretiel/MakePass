@@ -6,7 +6,7 @@ A password generator inspired by https://xkcd.com/936/
 Usage
 -----
 
-Simply install the package with ``pip install makepass``, then run the ``make_pass`` command::
+Simply install the package with ``pip3 install makepass``, then run the ``make_pass`` command::
 
     $ make_pass
     CorrectHorseBatteryStaple7
